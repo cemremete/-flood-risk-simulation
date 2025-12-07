@@ -1,0 +1,95 @@
+flowchart TD
+    Start([START]) --> Init[PHASE 1: INITIALIZATION]
+    
+    Init --> LoadConfig[Load System Configuration<br/>- Rainfall intensity<br/>- Flood frequency<br/>- Insurance availability<br/>- Risk knowledge level]
+    LoadConfig --> InitMarket[Initialize House Market<br/>Generate property database]
+    InitMarket --> InitPlayer[Initialize Player Profile<br/>- Budget<br/>- Risk tolerance<br/>- Knowledge level<br/>- Psychology state]
+    InitPlayer --> LoadData[(Load Property Database<br/>house attributes)]
+    
+    LoadData --> Phase2[PHASE 2: PRE-FLOOD DECISIONS]
+    
+    Phase2 --> HouseSelect[House Selection Algorithm Module<br/>selectBestHouse]
+    HouseSelect --> FilterBudget{Filter by Budget<br/>price ≤ playerBudget?}
+    FilterBudget -->|No matches| ErrorMsg[Display Error Message<br/>No suitable house found<br/>Suggest adjusting criteria]
+    ErrorMsg --> AdjustCriteria[Player Adjusts<br/>Budget/Risk Tolerance]
+    AdjustCriteria --> HouseSelect
+    
+    FilterBudget -->|Yes| FilterRisk{Filter by Risk<br/>riskLevel ≤ maxRisk?}
+    FilterRisk -->|No matches| ErrorMsg
+    FilterRisk -->|Yes| OptimizeLocation[Optimize by Location<br/>Maximize: elevation + distance<br/>Score = w1×elevation + w2×distance]
+    
+    OptimizeLocation --> HouseFound{Best House<br/>Found?}
+    HouseFound -->|Yes| PurchaseHouse[Purchase Selected House<br/>Deduct cost from budget<br/>Update player inventory]
+    HouseFound -->|No| ErrorMsg
+    
+    PurchaseHouse --> UpdateOwnership[Update Property Ownership<br/>Record transaction]
+    UpdateOwnership --> SetRiskParams[Set Player Risk Parameters<br/>- Max acceptable risk<br/>- Risk perception index]
+    
+    SetRiskParams --> ProtectionDecision{Purchase Furniture<br/>& Protection?}
+    ProtectionDecision -->|Yes| BuyProtection[Purchase Furniture & Equipment<br/>- Deduct cost from budget<br/>- Set protection level<br/>- Reduce effective risk]
+    ProtectionDecision -->|No| NoProtection[No Protection Applied<br/>effectiveRisk = baseRisk]
+    
+    BuyProtection --> CalcEffectiveRisk[Calculate Effective Risk<br/>effectiveRisk = baseRisk × protectionFactor]
+    NoProtection --> CalcEffectiveRisk
+    CalcEffectiveRisk --> InsuranceDecision{Purchase Insurance?}
+    
+    InsuranceDecision -->|Yes| BuyInsurance[Buy Insurance Policy<br/>- Pay premium<br/>- Set coverage amount<br/>- insuranceActive = true]
+    InsuranceDecision -->|No| NoInsurance[No Insurance<br/>insuranceActive = false]
+    
+    BuyInsurance --> Phase3[PHASE 3: SIMULATION LOOP]
+    NoInsurance --> Phase3
+    
+    Phase3 --> SimLoop[Update Simulation Time<br/>currentDay += 1<br/>Update weather conditions]
+    
+    SimLoop --> CalcWeather[Calculate Weather Parameters<br/>- Current rainfall<br/>- River water level<br/>- Soil saturation]
+    
+    CalcWeather --> CalcFloodProb[Calculate Flood Probability<br/>P = f rainfall, frequency, threshold<br/>Consider seasonal factors]
+    
+    CalcFloodProb --> FloodOccurs{Flood Event<br/>Occurs?<br/>random ≤ P}
+    
+    FloodOccurs -->|No| UpdateEconomy[Update Economic State<br/>- Property appreciation<br/>- Maintenance costs<br/>- Insurance premium]
+    UpdateEconomy --> UpdatePsych[Update Player Psychology<br/>- Risk perception decay<br/>- Confidence adjustment]
+    UpdatePsych --> CheckSimEnd{Simulation<br/>Time Complete?}
+    
+    FloodOccurs -->|Yes| FloodEvent[FLOOD EVENT TRIGGERED]
+    FloodEvent --> CalcDamage[Calculate Flood Damage<br/>damage = f elevation, distance, protection<br/>damageAmount = f propertyValue, floodSeverity]
+    
+    CalcDamage --> ApplyDamage[Apply Damage to Property<br/>- Reduce property value<br/>- Calculate repair costs<br/>- Update damage history]
+    
+    ApplyDamage --> HasInsurance{Insurance<br/>Active?}
+    HasInsurance -->|Yes| InsurancePayout[Apply Insurance Payout<br/>payout = min coverage, actualDamage<br/>playerBudget += payout]
+    HasInsurance -->|No| NoCompensation[No Compensation<br/>Full loss absorbed by player]
+    
+    InsurancePayout --> UpdatePsychFlood[Update Player Psychology<br/>- Increase risk perception<br/>- Update worry/stress levels<br/>- Adjust future risk tolerance]
+    NoCompensation --> UpdatePsychFlood
+    
+    UpdatePsychFlood --> Phase4[PHASE 4: POST-FLOOD RESPONSE]
+    
+    Phase4 --> UpdateGameState[Update Game State<br/>- Record flood event<br/>- Update statistics<br/>- Recalculate risk levels]
+    
+    UpdateGameState --> RepairDecision{Player Decides<br/>to Repair?}
+    RepairDecision -->|Yes| RepairProperty[Repair Property<br/>- Deduct repair cost<br/>- Restore property value<br/>- Update protection level]
+    RepairDecision -->|No| AcceptDamage[Accept Current State<br/>Property remains damaged]
+    
+    RepairProperty --> ReassessRisk[Reassess Risk Position<br/>Update player risk profile]
+    AcceptDamage --> ReassessRisk
+    
+    ReassessRisk --> CheckSimEnd
+    
+    CheckSimEnd -->|No| SimLoop
+    CheckSimEnd -->|Yes| SaveResults[(Save Simulation Results<br/>- Player decisions history<br/>- Flood events log<br/>- Final budget/property<br/>- Performance metrics)]
+    
+    SaveResults --> GenerateReport[Generate Performance Report<br/>- Economic outcomes<br/>- Risk management effectiveness<br/>- Decision quality analysis]
+    
+    GenerateReport --> End([END])
+    
+    style Start fill:#2ecc71,stroke:#27ae60,stroke-width:3px,color:#fff
+    style End fill:#e74c3c,stroke:#c0392b,stroke-width:3px,color:#fff
+    style Init fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:#fff
+    style Phase2 fill:#f39c12,stroke:#e67e22,stroke-width:2px,color:#fff
+    style Phase3 fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style Phase4 fill:#e91e63,stroke:#c2185b,stroke-width:2px,color:#fff
+    style FloodEvent fill:#e74c3c,stroke:#c0392b,stroke-width:3px,color:#fff
+    style ErrorMsg fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff
+    style LoadData fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:#fff
+    style SaveResults fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:#fff
