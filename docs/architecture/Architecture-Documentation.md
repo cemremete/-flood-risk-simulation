@@ -67,7 +67,7 @@ Array housesData = [
 
 ```mermaid
 graph LR
-    A[housesData<br/>Nested Array<br/>10 Properties] --> B[houseData<br/>Single Property Array<br/>5 Elements]
+    A["housesData\nNested Array\n10 Properties"] --> B["houseData\nSingle Property Array\n5 Elements"]
     B --> C[houseNum: int]
     B --> D[elevation: double]
     B --> E[distance: double]
@@ -75,9 +75,9 @@ graph LR
     B --> G[price: double]
     
     A --> H[Screening Phase]
-    H --> I[eligibleHouses<br/>Filtered Array]
+    H --> I["eligibleHouses\nFiltered Array"]
     I --> J[Optimization Phase]
-    J --> K[bestHouseData<br/>Selected Property Array]
+    J --> K["bestHouseData\nSelected Property Array"]
     
     style A fill:#e3f2fd
     style I fill:#fff9c4
@@ -157,25 +157,25 @@ double price = houseData[5];
 
 ```mermaid
 flowchart TD
-    A[Start Screening] --> B[Initialize eligibleHouses = []<br/>rejectedCount = 0]
+    A[Start Screening] --> B["Initialize eligibleHouses = empty array\nrejectedCount = 0"]
     B --> C[FOR i = 1 to numHouses]
-    C --> D[Extract Property Attributes<br/>houseNum, elevation, distance, risk, price]
+    C --> D["Extract Property Attributes\nhouseNum, elevation, distance, risk, price"]
     D --> E[Print Property Info]
-    E --> F{price > userBudget?}
-    F -->|Yes| G[Set rejectionReason =<br/>'Price exceeds budget']
-    F -->|No| H{risk > maxRiskTolerance?}
-    H -->|Yes| I[Set rejectionReason =<br/>'Risk level too high']
+    E --> F{price > userBudget}
+    F -->|Yes| G["Set rejectionReason:\nPrice exceeds budget"]
+    F -->|No| H{risk > maxRiskTolerance}
+    H -->|Yes| I["Set rejectionReason:\nRisk level too high"]
     H -->|No| J[Property ELIGIBLE]
     G --> K[rejectedCount++]
     I --> K
     K --> L[Print REJECTED Message]
-    J --> M[eligibleHouses.push<br/>property data]
+    J --> M["eligibleHouses.push\nproperty data"]
     M --> N[Print ELIGIBLE Message]
-    L --> O{More Properties?}
+    L --> O{More Properties}
     N --> O
     O -->|Yes| C
-    O -->|No| P{eligibleHouses.length == 0?}
-    P -->|Yes| Q[Print Recommendations<br/>Return 0]
+    O -->|No| P{eligibleHouses.length == 0}
+    P -->|Yes| Q["Print Recommendations\nReturn 0"]
     P -->|No| R[Continue to Optimization]
     
     style J fill:#c8e6c9
@@ -209,14 +209,14 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Start Range Calculation] --> B[Initialize:<br/>minElev = 1e9<br/>maxElev = -1e9<br/>minDist = 1e9<br/>maxDist = -1e9]
+    A[Start Range Calculation] --> B["Initialize:\nminElev = 1e9\nmaxElev = -1e9\nminDist = 1e9\nmaxDist = -1e9"]
     B --> C[FOR i = 1 to eligibleHouses.length]
-    C --> D[Extract elevation & distance<br/>from eligibleHouses[i]]
-    D --> E[minElev = min(minElev, elev)]
-    E --> F[maxElev = max(maxElev, elev)]
-    F --> G[minDist = min(minDist, dist)]
-    G --> H[maxDist = max(maxDist, dist)]
-    H --> I{More Properties?}
+    C --> D["Extract elevation and distance\nfrom eligibleHouses at index i"]
+    D --> E[minElev = min of minElev and elev]
+    E --> F[maxElev = max of maxElev and elev]
+    F --> G[minDist = min of minDist and dist]
+    G --> H[maxDist = max of maxDist and dist]
+    H --> I{More Properties}
     I -->|Yes| C
     I -->|No| J[Range Values Calculated]
     J --> K[Continue to Scoring]
@@ -245,23 +245,23 @@ FOR each eligible property:
 
 ```mermaid
 flowchart TD
-    A[Start Scoring] --> B[Initialize:<br/>bestScore = -1<br/>bestHouseNum = -1<br/>bestHouseData = []]
+    A[Start Scoring] --> B["Initialize:\nbestScore = -1\nbestHouseNum = -1\nbestHouseData = empty array"]
     B --> C[FOR i = 1 to eligibleHouses.length]
-    C --> D[Extract Property Data:<br/>houseNum, elevation, distance, risk, price]
-    D --> E{maxElev > minElev?}
-    E -->|Yes| F[elevNorm =<br/>elevation - minElev /<br/>maxElev - minElev]
+    C --> D["Extract Property Data:\nhouseNum, elevation, distance, risk, price"]
+    D --> E{maxElev > minElev}
+    E -->|Yes| F["elevNorm =\n(elevation - minElev) /\n(maxElev - minElev)"]
     E -->|No| G[elevNorm = 1.0]
-    F --> H{maxDist > minDist?}
+    F --> H{maxDist > minDist}
     G --> H
-    H -->|Yes| I[distNorm =<br/>distance - minDist /<br/>maxDist - minDist]
+    H -->|Yes| I["distNorm =\n(distance - minDist) /\n(maxDist - minDist)"]
     H -->|No| J[distNorm = 1.0]
-    I --> K[safetyScore =<br/>0.5 * elevNorm +<br/>0.5 * distNorm]
+    I --> K["safetyScore =\n0.5 * elevNorm +\n0.5 * distNorm"]
     J --> K
     K --> L[Print Score Details]
-    L --> M{safetyScore > bestScore?}
-    M -->|Yes| N[Update Best:<br/>bestScore = safetyScore<br/>bestHouseNum = houseNum<br/>bestHouseData = houseData]
+    L --> M{safetyScore > bestScore}
+    M -->|Yes| N["Update Best:\nbestScore = safetyScore\nbestHouseNum = houseNum\nbestHouseData = houseData"]
     M -->|No| O[Keep Current Best]
-    N --> P{More Properties?}
+    N --> P{More Properties}
     O --> P
     P -->|Yes| C
     P -->|No| Q[Best Property Selected]
@@ -316,14 +316,14 @@ FOR each eligible property:
 
 ```mermaid
 flowchart TD
-    A[Start Results Output] --> B[Print Summary Statistics:<br/>Total Evaluated<br/>Eligible Count<br/>Rejected Count]
-    B --> C[Print Recommended Property:<br/>Property Number<br/>Optimal Safety Score]
-    C --> D[Print Property Details:<br/>Purchase Price<br/>Elevation<br/>Distance<br/>Flood Risk]
-    D --> E{bestHouseData[4] < 0.30?}
-    E -->|Yes| F[Category: LOW RISK<br/>Description: Minimal exposure]
-    E -->|No| G{bestHouseData[4] < 0.60?}
-    G -->|Yes| H[Category: MODERATE RISK<br/>Description: Consider insurance]
-    G -->|No| I[Category: HIGH RISK<br/>Description: Protection needed]
+    A[Start Results Output] --> B["Print Summary Statistics:\nTotal Evaluated\nEligible Count\nRejected Count"]
+    B --> C["Print Recommended Property:\nProperty Number\nOptimal Safety Score"]
+    C --> D["Print Property Details:\nPurchase Price\nElevation\nDistance\nFlood Risk"]
+    D --> E{risk value < 0.30}
+    E -->|Yes| F["Category: LOW RISK\nDescription: Minimal exposure"]
+    E -->|No| G{risk value < 0.60}
+    G -->|Yes| H["Category: MODERATE RISK\nDescription: Consider insurance"]
+    G -->|No| I["Category: HIGH RISK\nDescription: Protection needed"]
     F --> J[Print Risk Assessment]
     H --> J
     I --> J
@@ -394,17 +394,17 @@ Selected Property → Format Results → Console Output → Return Property Numb
 
 ```mermaid
 flowchart LR
-    A[housesData<br/>10 Properties] --> B[Parameter<br/>Validation]
-    B --> C[Screening<br/>Phase]
-    C --> D[eligibleHouses<br/>Filtered Array]
-    D --> E[Range<br/>Calculation]
-    E --> F[minElev, maxElev<br/>minDist, maxDist]
-    F --> G[Normalization<br/>& Scoring]
-    G --> H[safetyScore<br/>for each property]
-    H --> I[Selection:<br/>Max Score]
-    I --> J[bestHouseData<br/>Selected Property]
-    J --> K[Results<br/>Output]
-    K --> L[Return<br/>bestHouseNum]
+    A["housesData\n10 Properties"] --> B["Parameter\nValidation"]
+    B --> C["Screening\nPhase"]
+    C --> D["eligibleHouses\nFiltered Array"]
+    D --> E["Range\nCalculation"]
+    E --> F["minElev, maxElev\nminDist, maxDist"]
+    F --> G["Normalization\n& Scoring"]
+    G --> H["safetyScore\nfor each property"]
+    H --> I["Selection:\nMax Score"]
+    I --> J["bestHouseData\nSelected Property"]
+    J --> K["Results\nOutput"]
+    K --> L["Return\nbestHouseNum"]
     
     style A fill:#e3f2fd
     style D fill:#fff9c4
