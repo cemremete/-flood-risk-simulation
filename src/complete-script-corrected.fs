@@ -1,78 +1,71 @@
-// ============================================================================
-// FLOOD RISK HOUSE SELECTION ENGINE
-// Advanced property evaluation system with multi-criteria optimization
-// ============================================================================
+/**Custom Code*/
+// House Selection Algorithm - FlexSim 21.1
+// Selects optimal house based on budget and risk criteria
 
-// ---------------------------------------------------------------------------
-// CONFIGURATION & VALIDATION
-// ---------------------------------------------------------------------------
+// ============================================================================
+// DATA INITIALIZATION
+// ============================================================================
+Array housesData = [
+    [1, 28, 450, 0.15, 285000],
+    [2, 12, 180, 0.68, 195000],
+    [3, 45, 720, 0.08, 420000],
+    [4, 8, 95, 0.82, 165000],
+    [5, 35, 610, 0.22, 375000],
+    [6, 18, 320, 0.51, 240000],
+    [7, 52, 850, 0.05, 495000],
+    [8, 6, 60, 0.91, 142000],
+    [9, 41, 680, 0.12, 385000],
+    [10, 22, 480, 0.38, 310000]
+];
 
+int numHouses = housesData.length;
+
+// ============================================================================
+// PARAMETER VALIDATION
+// ============================================================================
 double userBudget = 300000;
 double maxRiskTolerance = 0.40;
 
 if (userBudget <= 0) {
-    pt("ERROR: Budget must be positive");
+    print("ERROR: Budget must be positive");
     return 0;
 }
 
 if (maxRiskTolerance < 0 || maxRiskTolerance > 1) {
-    pt("ERROR: Risk tolerance must be between 0 and 1");
+    print("ERROR: Risk tolerance must be between 0 and 1");
     return 0;
 }
 
-// ---------------------------------------------------------------------------
-// DATA LOADING & PREPARATION
-// ---------------------------------------------------------------------------
-
-Object dataTable = Table("HousesData");
-
-if (!dataTable) {
-    pt("ERROR: HousesData table not found. Please import the Excel file.");
+if (numHouses == 0) {
+    print("ERROR: No house data available");
     return 0;
 }
 
-int numRows = dataTable.numRows;
-int numCols = dataTable.numCols;
-
-if (numCols < 5) {
-    pt("ERROR: Table must have at least 5 columns (house number, elevation, distance, risk, price)");
-    return 0;
-}
-
-if (numRows < 2) {
-    pt("ERROR: Table must have at least one data row plus header");
-    return 0;
-}
-
-pt("\n============================================================================");
-pt("FLOOD RISK PROPERTY EVALUATION ENGINE");
-pt("============================================================================\n");
-pt("Search Parameters:");
-pt("  Maximum Budget: $" + numtostring(userBudget, 0, 0));
-pt("  Risk Tolerance: " + numtostring(maxRiskTolerance, 1, 2));
-pt("  Properties to Evaluate: " + numtostring(numRows - 1));
-pt("\n============================================================================");
-pt("SCREENING PHASE - Filtering by Hard Constraints");
-pt("============================================================================\n");
-
-// ---------------------------------------------------------------------------
-// PHASE 1: CONSTRAINT FILTERING
-// ---------------------------------------------------------------------------
+// ============================================================================
+// SCREENING PHASE
+// ============================================================================
+print("\nFLOOD RISK PROPERTY EVALUATION ENGINE\n");
+print("Search Parameters:\n");
+print("  Maximum Budget: $" + string.fromNum(userBudget, 0) + "\n");
+print("  Risk Tolerance: " + string.fromNum(maxRiskTolerance, 2) + "\n");
+print("  Properties to Evaluate: " + string.fromNum(numHouses, 0) + "\n");
+print("SCREENING PHASE - Filtering by Hard Constraints\n");
 
 Array eligibleHouses = [];
 int rejectedCount = 0;
 
-for (int i = 2; i <= numRows; i++) {
-    int houseNum = i - 1;
-    double elevation = gettablenum(dataTable, i, 2);
-    double distance = gettablenum(dataTable, i, 3);
-    double risk = gettablenum(dataTable, i, 4);
-    double price = gettablenum(dataTable, i, 5);
+for (int i = 1; i <= numHouses; i++) {
+    Array houseData = housesData[i];
+    int houseNum = houseData[1];
+    double elevation = houseData[2];
+    double distance = houseData[3];
+    double risk = houseData[4];
+    double price = houseData[5];
     
-    pt("----------------------------------------------------------------------------");
-    pt("Property #" + numtostring(houseNum));
-    pt("  Price: $" + numtostring(price, 0, 0) + " | Risk: " + numtostring(risk, 1, 2) + 
-       " | Elev: " + numtostring(elevation, 0, 0) + "m | Dist: " + numtostring(distance, 0, 0) + "m");
+    print("\nProperty #" + string.fromNum(houseNum, 0) + "\n");
+    string priceStr = "  Price: $" + string.fromNum(price, 0) + " | Risk: " + string.fromNum(risk, 2);
+    string elevStr = " | Elev: " + string.fromNum(elevation, 0) + "m | Dist: " + string.fromNum(distance, 0) + "m";
+    print(priceStr + elevStr + "\n");
     
     string rejectionReason = "";
     
@@ -85,39 +78,34 @@ for (int i = 2; i <= numRows; i++) {
     }
     
     if (rejectionReason != "") {
-        pt("  ❌ REJECTED: " + rejectionReason);
+        print("  REJECTED: " + rejectionReason + "\n");
     } else {
-        pt("  ✓ ELIGIBLE: Meets all constraints");
+        print("  ELIGIBLE: Meets all constraints\n");
         eligibleHouses.push([houseNum, elevation, distance, risk, price]);
     }
 }
 
-pt("----------------------------------------------------------------------------\n");
-
-// ---------------------------------------------------------------------------
-// PHASE 2: OPTIMIZATION
-// ---------------------------------------------------------------------------
+print("\n");
 
 if (eligibleHouses.length == 0) {
-    pt("============================================================================");
-    pt("NO SUITABLE PROPERTIES FOUND");
-    pt("============================================================================\n");
-    pt("Recommendations:");
-    pt("  • Increase your budget");
-    pt("  • Raise risk tolerance (with caution)");
-    pt("  • Wait for new listings");
-    pt("\n============================================================================\n");
+    print("NO SUITABLE PROPERTIES FOUND\n");
+    print("Recommendations:");
+    print("  - Increase your budget");
+    print("  - Raise risk tolerance (with caution)");
+    print("  - Wait for new listings\n");
     return 0;
 }
 
-pt("============================================================================");
-pt("OPTIMIZATION PHASE - Selecting Best Property");
-pt("============================================================================\n");
-pt("Eligible Properties: " + numtostring(eligibleHouses.length));
-pt("Optimization Criteria:");
-pt("  • Maximize elevation above river (flood protection)");
-pt("  • Maximize distance from river (reduced exposure)");
-pt("  • Weighted safety score calculation\n");
+// ============================================================================
+// OPTIMIZATION PHASE
+// ============================================================================
+print("\nOPTIMIZATION PHASE - Selecting Best Property\n");
+print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0) + "\n");
+print("Optimization Criteria:\n");
+print("  - Maximize elevation above river (flood protection)\n");
+print("  - Maximize distance from river (reduced exposure)\n");
+print("  - Weighted safety score calculation\n");
+print("Safety Score Calculations:\n");
 
 double minElev = 1e9;
 double maxElev = -1e9;
@@ -129,19 +117,15 @@ for (int i = 1; i <= eligibleHouses.length; i++) {
     double elev = houseData[2];
     double dist = houseData[3];
     
-    minElev = fmin(minElev, elev);
-    maxElev = fmax(maxElev, elev);
-    minDist = fmin(minDist, dist);
-    maxDist = fmax(maxDist, dist);
+    minElev = min(minElev, elev);
+    maxElev = max(maxElev, elev);
+    minDist = min(minDist, dist);
+    maxDist = max(maxDist, dist);
 }
 
 int bestHouseNum = -1;
 double bestScore = -1;
 Array bestHouseData = [];
-
-pt("----------------------------------------------------------------------------");
-pt("Safety Score Calculations:");
-pt("----------------------------------------------------------------------------\n");
 
 for (int i = 1; i <= eligibleHouses.length; i++) {
     Array houseData = eligibleHouses[i];
@@ -155,10 +139,10 @@ for (int i = 1; i <= eligibleHouses.length; i++) {
     double distNorm = (maxDist > minDist) ? (distance - minDist) / (maxDist - minDist) : 1.0;
     double safetyScore = 0.5 * elevNorm + 0.5 * distNorm;
     
-    pt("Property #" + numtostring(houseNum) + ":");
-    pt("  Elevation Score: " + numtostring(elevNorm, 1, 4));
-    pt("  Distance Score: " + numtostring(distNorm, 1, 4));
-    pt("  Combined Safety Score: " + numtostring(safetyScore, 1, 4) + "\n");
+    print("\nProperty #" + string.fromNum(houseNum, 0) + ":\n");
+    print("  Elevation Score: " + string.fromNum(elevNorm, 4) + "\n");
+    print("  Distance Score: " + string.fromNum(distNorm, 4) + "\n");
+    print("  Combined Safety Score: " + string.fromNum(safetyScore, 4) + "\n");
     
     if (safetyScore > bestScore) {
         bestScore = safetyScore;
@@ -167,26 +151,21 @@ for (int i = 1; i <= eligibleHouses.length; i++) {
     }
 }
 
-// ---------------------------------------------------------------------------
-// RESULTS PRESENTATION
-// ---------------------------------------------------------------------------
+// ============================================================================
+// RESULTS OUTPUT
+// ============================================================================
+print("\nSELECTION RESULTS\n");
+print("Total Properties Evaluated: " + string.fromNum(numHouses, 0) + "\n");
+print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0) + "\n");
+print("Rejected Properties: " + string.fromNum(rejectedCount, 0) + "\n");
+print("RECOMMENDED PROPERTY: #" + string.fromNum(bestHouseNum, 0) + "\n");
+print("Optimal Safety Score: " + string.fromNum(bestScore, 4) + "\n");
 
-pt("============================================================================");
-pt("SELECTION RESULTS");
-pt("============================================================================\n");
-pt("Total Properties Evaluated: " + numtostring(numRows - 1));
-pt("Eligible Properties: " + numtostring(eligibleHouses.length));
-pt("Rejected Properties: " + numtostring(rejectedCount));
-pt("\n----------------------------------------------------------------------------");
-pt("★ RECOMMENDED PROPERTY: #" + numtostring(bestHouseNum));
-pt("----------------------------------------------------------------------------");
-pt("Optimal Safety Score: " + numtostring(bestScore, 1, 4) + "\n");
-
-pt("Property Details:");
-pt("  Purchase Price: $" + numtostring(bestHouseData[5], 0, 0));
-pt("  Elevation Above River: " + numtostring(bestHouseData[2], 1, 1) + " m");
-pt("  Distance from River: " + numtostring(bestHouseData[3], 0, 0) + " m");
-pt("  Flood Risk Estimate: " + numtostring(bestHouseData[4], 1, 2) + "\n");
+print("Property Details:\n");
+print("  Purchase Price: $" + string.fromNum(bestHouseData[5], 0) + "\n");
+print("  Elevation Above River: " + string.fromNum(bestHouseData[2], 1) + " m\n");
+print("  Distance from River: " + string.fromNum(bestHouseData[3], 0) + " m\n");
+print("  Flood Risk Estimate: " + string.fromNum(bestHouseData[4], 2) + "\n");
 
 string riskCategory;
 string riskDescription;
@@ -202,14 +181,9 @@ if (bestHouseData[4] < 0.30) {
     riskDescription = "Significant flood protection measures recommended";
 }
 
-pt("Risk Assessment:");
-pt("  Status: " + riskCategory + " - " + riskDescription + "\n");
+print("Risk Assessment:\n");
+print("  Status: " + riskCategory + " - " + riskDescription + "\n");
 
-pt("============================================================================");
-pt("ANALYSIS COMPLETE");
-pt("============================================================================\n");
+print("ANALYSIS COMPLETE\n");
 
 return bestHouseNum;
-
-
-
