@@ -1,3 +1,4 @@
+/**Custom Code*/
 // House Selection Algorithm - FlexSim 21.1
 // Selects optimal house based on budget and risk criteria
 
@@ -44,11 +45,11 @@ if (numHouses == 0) {
 // SCREENING PHASE
 // ============================================================================
 print("\nFLOOD RISK PROPERTY EVALUATION ENGINE\n");
-print("Search Parameters:");
-print("  Maximum Budget: $" + string.fromNum(userBudget, 0));
-print("  Risk Tolerance: " + string.fromNum(maxRiskTolerance, 2));
-print("  Properties to Evaluate: " + string.fromNum(numHouses, 0));
-print("\nSCREENING PHASE - Filtering by Hard Constraints\n");
+print("Search Parameters:\n");
+print("  Maximum Budget: $" + string.fromNum(userBudget, 0) + "\n");
+print("  Risk Tolerance: " + string.fromNum(maxRiskTolerance, 2) + "\n");
+print("  Properties to Evaluate: " + string.fromNum(numHouses, 0) + "\n");
+print("SCREENING PHASE - Filtering by Hard Constraints\n");
 
 Array eligibleHouses = [];
 int rejectedCount = 0;
@@ -61,10 +62,10 @@ for (int i = 1; i <= numHouses; i++) {
     double risk = houseData[4];
     double price = houseData[5];
     
-    print("Property #" + string.fromNum(houseNum, 0));
+    print("\nProperty #" + string.fromNum(houseNum, 0) + "\n");
     string priceStr = "  Price: $" + string.fromNum(price, 0) + " | Risk: " + string.fromNum(risk, 2);
     string elevStr = " | Elev: " + string.fromNum(elevation, 0) + "m | Dist: " + string.fromNum(distance, 0) + "m";
-    print(priceStr + elevStr);
+    print(priceStr + elevStr + "\n");
     
     string rejectionReason = "";
     
@@ -77,9 +78,9 @@ for (int i = 1; i <= numHouses; i++) {
     }
     
     if (rejectionReason != "") {
-        print("  REJECTED: " + rejectionReason);
+        print("  REJECTED: " + rejectionReason + "\n");
     } else {
-        print("  ELIGIBLE: Meets all constraints");
+        print("  ELIGIBLE: Meets all constraints\n");
         eligibleHouses.push([houseNum, elevation, distance, risk, price]);
     }
 }
@@ -98,12 +99,13 @@ if (eligibleHouses.length == 0) {
 // ============================================================================
 // OPTIMIZATION PHASE
 // ============================================================================
-print("OPTIMIZATION PHASE - Selecting Best Property\n");
-print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0));
-print("Optimization Criteria:");
-print("  - Maximize elevation above river (flood protection)");
-print("  - Maximize distance from river (reduced exposure)");
+print("\nOPTIMIZATION PHASE - Selecting Best Property\n");
+print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0) + "\n");
+print("Optimization Criteria:\n");
+print("  - Maximize elevation above river (flood protection)\n");
+print("  - Maximize distance from river (reduced exposure)\n");
 print("  - Weighted safety score calculation\n");
+print("Safety Score Calculations:\n");
 
 double minElev = 1e9;
 double maxElev = -1e9;
@@ -125,8 +127,6 @@ int bestHouseNum = -1;
 double bestScore = -1;
 Array bestHouseData = [];
 
-print("Safety Score Calculations:\n");
-
 for (int i = 1; i <= eligibleHouses.length; i++) {
     Array houseData = eligibleHouses[i];
     int houseNum = houseData[1];
@@ -139,9 +139,9 @@ for (int i = 1; i <= eligibleHouses.length; i++) {
     double distNorm = (maxDist > minDist) ? (distance - minDist) / (maxDist - minDist) : 1.0;
     double safetyScore = 0.5 * elevNorm + 0.5 * distNorm;
     
-    print("Property #" + string.fromNum(houseNum, 0) + ":");
-    print("  Elevation Score: " + string.fromNum(elevNorm, 4));
-    print("  Distance Score: " + string.fromNum(distNorm, 4));
+    print("\nProperty #" + string.fromNum(houseNum, 0) + ":\n");
+    print("  Elevation Score: " + string.fromNum(elevNorm, 4) + "\n");
+    print("  Distance Score: " + string.fromNum(distNorm, 4) + "\n");
     print("  Combined Safety Score: " + string.fromNum(safetyScore, 4) + "\n");
     
     if (safetyScore > bestScore) {
@@ -154,17 +154,17 @@ for (int i = 1; i <= eligibleHouses.length; i++) {
 // ============================================================================
 // RESULTS OUTPUT
 // ============================================================================
-print("SELECTION RESULTS\n");
-print("Total Properties Evaluated: " + string.fromNum(numHouses, 0));
-print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0));
-print("Rejected Properties: " + string.fromNum(rejectedCount, 0));
-print("\nRECOMMENDED PROPERTY: #" + string.fromNum(bestHouseNum, 0));
+print("\nSELECTION RESULTS\n");
+print("Total Properties Evaluated: " + string.fromNum(numHouses, 0) + "\n");
+print("Eligible Properties: " + string.fromNum(eligibleHouses.length, 0) + "\n");
+print("Rejected Properties: " + string.fromNum(rejectedCount, 0) + "\n");
+print("RECOMMENDED PROPERTY: #" + string.fromNum(bestHouseNum, 0) + "\n");
 print("Optimal Safety Score: " + string.fromNum(bestScore, 4) + "\n");
 
-print("Property Details:");
-print("  Purchase Price: $" + string.fromNum(bestHouseData[5], 0));
-print("  Elevation Above River: " + string.fromNum(bestHouseData[2], 1) + " m");
-print("  Distance from River: " + string.fromNum(bestHouseData[3], 0) + " m");
+print("Property Details:\n");
+print("  Purchase Price: $" + string.fromNum(bestHouseData[5], 0) + "\n");
+print("  Elevation Above River: " + string.fromNum(bestHouseData[2], 1) + " m\n");
+print("  Distance from River: " + string.fromNum(bestHouseData[3], 0) + " m\n");
 print("  Flood Risk Estimate: " + string.fromNum(bestHouseData[4], 2) + "\n");
 
 string riskCategory;
@@ -181,7 +181,7 @@ if (bestHouseData[4] < 0.30) {
     riskDescription = "Significant flood protection measures recommended";
 }
 
-print("Risk Assessment:");
+print("Risk Assessment:\n");
 print("  Status: " + riskCategory + " - " + riskDescription + "\n");
 
 print("ANALYSIS COMPLETE\n");
